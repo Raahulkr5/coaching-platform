@@ -2,7 +2,8 @@
   "name": "coaching-platform-server",
   "version": "1.0.0",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "build": "echo 'No build required'"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

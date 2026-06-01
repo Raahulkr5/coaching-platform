@@ -21,9 +21,12 @@ const dashboardRoutes = require("./routes/dashboardRoutes");
 app.use("/api/auth", authRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 
-// Simple Health Check
-app.get("/", (req, res) => {
-  res.json({ message: "Coaching Platform API is running" });
+// Serve static frontend files in production
+app.use(express.static(path.join(__dirname, "../client/dist")));
+
+// All other GET requests not handled before will return the React app
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../client/dist/index.html"));
 });
 
 // Start Server
