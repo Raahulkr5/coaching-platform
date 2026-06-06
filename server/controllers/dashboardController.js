@@ -1,6 +1,18 @@
 const db = require("../database/db");
 const multer = require("multer");
 const path = require("path");
+const Razorpay = require("razorpay");
+const crypto = require("crypto");
+
+let razorpay;
+try {
+  razorpay = new Razorpay({
+    key_id: process.env.RAZORPAY_KEY_ID || "rzp_test_placeholder",
+    key_secret: process.env.RAZORPAY_KEY_SECRET || "secret_placeholder",
+  });
+} catch (error) {
+  console.log("Razorpay keys missing or invalid.");
+}
 
 // Multer Storage
 const storage = multer.diskStorage({
@@ -85,6 +97,21 @@ exports.getCourses = (req, res) => {
     (err, rows) => {
       if (err) return res.status(500).json({ message: err.message });
       res.json(rows);
+    }
+  );
+};
+
+/* ── POST /api/dashboard/courses ── */
+exports.createCourse = (req, res) => {
+  const { name, color } = req.body;
+  if (!name) return res.status(400).json({ message: "Course name is required" });
+
+  db.run(
+    "INSERT INTO courses (name, color) VALUES (?, ?)",
+    [name, color || "#7c3aed"],
+    function (err) {
+      if (err) return res.status(500).json({ message: err.message });
+      res.json({ id: this.lastID, message: "Course created successfully" });
     }
   );
 };
@@ -207,28 +234,58 @@ exports.updateProfile = (req, res) => {
   );
 };
 
-/* ── POST /api/dashboard/pay ── */
-exports.processPayment = (req, res) => {
-  const userId = req.user.id; 
+/* ── POST /api/dashboard/pay/create-order ── */
+exports.createRazorpayOrder = async (req, res) => {
   const { amount } = req.body;
+  if (!razorpay) return res.status(500).json({ message: "Razorpay not configured on backend." });
+  
+  if (process.env.RAZORPAY_KEY_ID === "rzp_test_placeholder" || !process.env.RAZORPAY_KEY_ID) {
+    return res.status(500).json({ message: "Please add your real Razorpay Test Keys to the server/.env file! Using placeholder keys currently." });
+  }
 
-  db.run(
-    "UPDATE users SET paymentStatus = 'Completed' WHERE id = ?",
-    [userId],
-    function(err) {
-      if (err) return res.status(500).json({ message: err.message });
-      
-      // Also record in payments table
-      db.run(
-        "INSERT INTO payments (user_id, amount) VALUES (?, ?)",
-        [userId, amount || 4600],
-        function(err2) {
-          if (err2) return res.status(500).json({ message: err2.message });
-          res.json({ message: "Payment successful" });
-        }
-      );
-    }
-  );
+  try {
+    const options = {
+      amount: (amount || 4600) * 100, // Razorpay works in paise
+      currency: "INR",
+      receipt: `receipt_${Date.now()}`
+    };
+    const order = await razorpay.orders.create(options);
+    res.json(order);
+  } catch (err) {
+    res.status(500).json({ message: err.message || "Failed to create order" });
+  }
+};
+
+/* ── POST /api/dashboard/pay/verify ── */
+exports.verifyRazorpayPayment = (req, res) => {
+  const { razorpay_order_id, razorpay_payment_id, razorpay_signature, amount } = req.body;
+  const userId = req.user.id;
+
+  const generated_signature = crypto
+    .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET || "secret_placeholder")
+    .update(razorpay_order_id + "|" + razorpay_payment_id)
+    .digest("hex");
+
+  if (generated_signature === razorpay_signature) {
+    db.run(
+      "UPDATE users SET paymentStatus = 'Completed' WHERE id = ?",
+      [userId],
+      function(err) {
+        if (err) return res.status(500).json({ message: err.message });
+        
+        db.run(
+          "INSERT INTO payments (user_id, amount) VALUES (?, ?)",
+          [userId, amount || 4600],
+          function(err2) {
+            if (err2) return res.status(500).json({ message: err2.message });
+            res.json({ message: "Payment verified securely!" });
+          }
+        );
+      }
+    );
+  } else {
+    res.status(400).json({ message: "Invalid signature. Verification failed." });
+  }
 };
 
 /* ── GET /api/dashboard/payments (joins payments table with user info) ── */
@@ -259,4 +316,86 @@ exports.deleteStudent = (req, res) => {
       res.json({ message: "Delete operation completed" });
     });
   });
+};
+
+/* ── POST /api/dashboard/tests ── */
+exports.createTest = (req, res) => {
+  const { title, html_content } = req.body;
+  if (!title || !html_content) return res.status(400).json({ message: "Title and HTML content are required" });
+
+  db.run(
+    "INSERT INTO tests (title, html_content) VALUES (?, ?)",
+    [title, html_content],
+    function (err) {
+      if (err) return res.status(500).json({ message: err.message });
+      res.json({ id: this.lastID, message: "Test created successfully" });
+    }
+  );
+};
+
+/* ── GET /api/dashboard/tests ── */
+exports.getTests = (req, res) => {
+  db.all("SELECT * FROM tests ORDER BY id DESC", [], (err, rows) => {
+    if (err) return res.status(500).json({ message: err.message });
+    res.json(rows);
+  });
+};
+
+/* ── DELETE /api/dashboard/tests/:id ── */
+exports.deleteTest = (req, res) => {
+  const { id } = req.params;
+  db.run("DELETE FROM tests WHERE id = ?", [id], function (err) {
+    if (err) return res.status(500).json({ message: err.message });
+    res.json({ message: "Test deleted successfully" });
+  });
+};
+
+/* ── POST /api/dashboard/test-results ── */
+exports.submitTestResult = (req, res) => {
+  const { test_id, answered, total_questions } = req.body;
+  const user_id = req.user.id;
+
+  if (!test_id) return res.status(400).json({ message: "Test ID is required" });
+
+  db.run(
+    "INSERT INTO test_results (test_id, user_id, answered, total_questions) VALUES (?, ?, ?, ?)",
+    [test_id, user_id, answered || 0, total_questions || 0],
+    function (err) {
+      if (err) return res.status(500).json({ message: err.message });
+      res.json({ id: this.lastID, message: "Test result recorded successfully" });
+    }
+  );
+};
+
+/* ── GET /api/dashboard/my-test-results ── */
+exports.getMyTestResults = (req, res) => {
+  const user_id = req.user.id;
+  db.all(
+    `SELECT tr.*, t.title as test_title 
+     FROM test_results tr 
+     JOIN tests t ON tr.test_id = t.id 
+     WHERE tr.user_id = ? 
+     ORDER BY tr.created_at DESC`,
+    [user_id],
+    (err, rows) => {
+      if (err) return res.status(500).json({ message: err.message });
+      res.json(rows);
+    }
+  );
+};
+
+/* ── GET /api/dashboard/all-test-results ── */
+exports.getAllTestResults = (req, res) => {
+  db.all(
+    `SELECT tr.*, t.title as test_title, u.firstName, u.lastName, u.email 
+     FROM test_results tr 
+     JOIN tests t ON tr.test_id = t.id 
+     JOIN users u ON tr.user_id = u.id 
+     ORDER BY tr.created_at DESC`,
+    [],
+    (err, rows) => {
+      if (err) return res.status(500).json({ message: err.message });
+      res.json(rows);
+    }
+  );
 };

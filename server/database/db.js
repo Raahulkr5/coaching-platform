@@ -31,6 +31,8 @@ db.serialize(() => {
     db.run("ALTER TABLE users ADD COLUMN avatar TEXT", (err) => {});
     db.run("ALTER TABLE users ADD COLUMN course_id INTEGER", (err) => {});
     db.run("ALTER TABLE users ADD COLUMN created_at TEXT DEFAULT (datetime('now'))", (err) => {});
+    db.run("ALTER TABLE users ADD COLUMN resetToken TEXT", (err) => {});
+    db.run("ALTER TABLE users ADD COLUMN resetTokenExpiry TEXT", (err) => {});
 
     // Seed/Update admin: admin@pyqs.com / admin123
     const adminEmail = "admin@pyqs.com";
@@ -67,6 +69,28 @@ db.serialize(() => {
       status     TEXT DEFAULT 'Completed',
       method     TEXT DEFAULT 'UPI/Card',
       created_at TEXT DEFAULT (datetime('now')),
+      FOREIGN KEY (user_id) REFERENCES users(id)
+    )
+  `);
+
+  db.run(`
+    CREATE TABLE IF NOT EXISTS tests (
+      id           INTEGER PRIMARY KEY AUTOINCREMENT,
+      title        TEXT NOT NULL,
+      html_content TEXT NOT NULL,
+      created_at   TEXT DEFAULT (datetime('now'))
+    )
+  `);
+
+  db.run(`
+    CREATE TABLE IF NOT EXISTS test_results (
+      id              INTEGER PRIMARY KEY AUTOINCREMENT,
+      test_id         INTEGER,
+      user_id         INTEGER,
+      answered        INTEGER,
+      total_questions INTEGER,
+      created_at      TEXT DEFAULT (datetime('now')),
+      FOREIGN KEY (test_id) REFERENCES tests(id),
       FOREIGN KEY (user_id) REFERENCES users(id)
     )
   `);

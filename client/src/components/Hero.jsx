@@ -1,9 +1,10 @@
 import { Link } from "react-router-dom";
 
 const stats = [
-  { value: "2,400+", label: "Students Enrolled" },
-  { value: "98%", label: "Score Improvement" },
-  { value: "50+", label: "Expert Coaches" },
+  { title: "Personalized Roadmaps", desc: "Every student receives a learning plan based on goals, timeline, and current performance." },
+  { title: "Global Student Support", desc: "Designed for students in the USA, UAE, and international school systems." },
+  { title: "Progress Visibility", desc: "Parents receive clear updates on performance, areas for improvement, and next steps." },
+  { title: "Exam-Focused Prep", desc: "Practice, strategy, review, and feedback aligned with real exam expectations." },
 ];
 
 const features = [
@@ -17,63 +18,48 @@ export default function Hero() {
     <div style={{ minHeight: "100vh", paddingTop: "70px" }}>
 
       {/* Hero Section */}
-      <section style={{
-        position: "relative",
-        minHeight: "calc(100vh - 70px)",
-        display: "flex",
-        alignItems: "center",
-        padding: "60px 80px",
-        overflow: "hidden",
-      }}>
+      <section className="hero-section">
         {/* Background blobs */}
         <div style={{
           position: "absolute", top: "10%", left: "5%",
           width: 500, height: 500,
-          background: "radial-gradient(circle, rgba(124,58,237,0.18) 0%, transparent 70%)",
+          background: "radial-gradient(circle, rgba(14,165,233,0.12) 0%, transparent 70%)",
           borderRadius: "50%", pointerEvents: "none",
         }} />
         <div style={{
           position: "absolute", bottom: "10%", right: "5%",
           width: 400, height: 400,
-          background: "radial-gradient(circle, rgba(236,72,153,0.15) 0%, transparent 70%)",
+          background: "radial-gradient(circle, rgba(20,184,166,0.10) 0%, transparent 70%)",
           borderRadius: "50%", pointerEvents: "none",
         }} />
 
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: "1fr 1fr",
-          gap: "80px",
-          alignItems: "center",
-          width: "100%",
-          maxWidth: 1200,
-          margin: "0 auto",
-        }}>
+        <div className="hero-grid">
           {/* Left — Copy */}
           <div className="animate-fade-up">
             <div style={{
               display: "inline-flex",
               alignItems: "center",
               gap: 8,
-              background: "rgba(124,58,237,0.12)",
-              border: "1px solid rgba(124,58,237,0.3)",
+              background: "rgba(14,165,233,0.08)",
+              border: "1px solid rgba(14,165,233,0.25)",
               borderRadius: 50,
               padding: "6px 16px",
               fontSize: 13,
               fontWeight: 600,
-              color: "#a78bfa",
+              color: "var(--primary)",
               marginBottom: 24,
             }}>
-              <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#a78bfa", display: "inline-block" }} />
+              <span style={{ width: 8, height: 8, borderRadius: "50%", background: "var(--primary)", display: "inline-block" }} />
               #1 SAT · ACT · AP Coaching Platform
             </div>
 
             <h1 style={{
-              fontSize: "clamp(42px, 5vw, 68px)",
+              fontSize: "clamp(36px, 5vw, 68px)",
               fontWeight: 900,
               lineHeight: 1.08,
               letterSpacing: "-1.5px",
               marginBottom: 24,
-              color: "#f1f0ff",
+              color: "var(--text)",
             }}>
               Master your
               <br />
@@ -84,7 +70,7 @@ export default function Hero() {
 
             <p style={{
               fontSize: 18,
-              color: "#8b8aa3",
+              color: "var(--text-muted)",
               lineHeight: 1.7,
               maxWidth: 460,
               marginBottom: 40,
@@ -105,13 +91,13 @@ export default function Hero() {
             </div>
 
             {/* Stats Row */}
-            <div style={{ display: "flex", gap: 40 }}>
-              {stats.map(({ value, label }) => (
-                <div key={label}>
-                  <div style={{ fontSize: 28, fontWeight: 800, color: "#f1f0ff", letterSpacing: "-0.5px" }}>
-                    {value}
+            <div className="hero-stats-grid">
+              {stats.map(({ title, desc }) => (
+                <div key={title}>
+                  <div style={{ fontSize: 16, fontWeight: 700, color: "var(--text)", letterSpacing: "-0.3px", marginBottom: 6 }}>
+                    {title}
                   </div>
-                  <div style={{ fontSize: 13, color: "#8b8aa3", marginTop: 2 }}>{label}</div>
+                  <div style={{ fontSize: 13, color: "var(--text-muted)", lineHeight: 1.5 }}>{desc}</div>
                 </div>
               ))}
             </div>
@@ -122,31 +108,29 @@ export default function Hero() {
             {/* Glow */}
             <div style={{
               position: "absolute", inset: -2,
-              background: "linear-gradient(135deg, rgba(124,58,237,0.6), rgba(236,72,153,0.6))",
+              background: "linear-gradient(135deg, rgba(14,165,233,0.6), rgba(20,184,166,0.6))",
               borderRadius: 28,
               filter: "blur(20px)",
               opacity: 0.3,
             }} />
 
-            <div className="glass-card" style={{
+            <div className="glass-card feature-glass-card" style={{
               position: "relative",
-              padding: "40px",
               borderRadius: 28,
-              background: "rgba(19,19,26,0.9)",
-              border: "1px solid rgba(255,255,255,0.1)",
+              boxShadow: "0 20px 60px rgba(14,165,233,0.1)",
             }}>
               <div style={{
                 display: "flex", alignItems: "center", gap: 12, marginBottom: 32,
               }}>
                 <div style={{
                   width: 44, height: 44, borderRadius: 12,
-                  background: "linear-gradient(135deg, #7c3aed, #ec4899)",
+                  background: "linear-gradient(135deg, #0ea5e9, #14b8a6)",
                   display: "flex", alignItems: "center", justifyContent: "center",
                   fontSize: 20,
                 }}>🎓</div>
                 <div>
-                  <div style={{ fontWeight: 700, fontSize: 16 }}>Why Choose PYQs?</div>
-                  <div style={{ fontSize: 13, color: "#8b8aa3" }}>Everything you need to succeed</div>
+                  <div style={{ fontWeight: 700, fontSize: 16, color: "var(--text)" }}>Why Choose PYQs?</div>
+                  <div style={{ fontSize: 13, color: "var(--text-muted)" }}>Everything you need to succeed</div>
                 </div>
               </div>
 
@@ -155,39 +139,39 @@ export default function Hero() {
                   <div key={title} style={{
                     display: "flex", gap: 16, alignItems: "flex-start",
                     padding: "16px 20px",
-                    background: "rgba(255,255,255,0.04)",
-                    border: "1px solid rgba(255,255,255,0.06)",
+                    background: "var(--bg-glass)",
+                    border: "1px solid var(--border)",
                     borderRadius: 14,
                     transition: "all 0.2s ease",
                   }}
                     onMouseEnter={e => {
-                      e.currentTarget.style.background = "rgba(124,58,237,0.1)";
-                      e.currentTarget.style.borderColor = "rgba(124,58,237,0.3)";
+                      e.currentTarget.style.background = "rgba(14,165,233,0.1)";
+                      e.currentTarget.style.borderColor = "rgba(14,165,233,0.25)";
                     }}
                     onMouseLeave={e => {
-                      e.currentTarget.style.background = "rgba(255,255,255,0.04)";
-                      e.currentTarget.style.borderColor = "rgba(255,255,255,0.06)";
+                      e.currentTarget.style.background = "var(--bg-glass)";
+                      e.currentTarget.style.borderColor = "var(--border)";
                     }}
                   >
                     <span style={{ fontSize: 24, lineHeight: 1 }}>{icon}</span>
                     <div>
-                      <div style={{ fontWeight: 600, fontSize: 15, marginBottom: 4 }}>{title}</div>
-                      <div style={{ fontSize: 13, color: "#8b8aa3", lineHeight: 1.5 }}>{desc}</div>
+                      <div style={{ fontWeight: 600, fontSize: 15, marginBottom: 4, color: "var(--text)" }}>{title}</div>
+                      <div style={{ fontSize: 13, color: "var(--text-muted)", lineHeight: 1.5 }}>{desc}</div>
                     </div>
                   </div>
                 ))}
               </div>
 
               {/* Progress bar decoration */}
-              <div style={{ marginTop: 28, padding: "16px 20px", background: "rgba(255,255,255,0.04)", borderRadius: 14 }}>
+              <div style={{ marginTop: 28, padding: "16px 20px", background: "var(--bg-glass)", borderRadius: 14, border: "1px solid var(--border)" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 10 }}>
-                  <span style={{ fontSize: 13, fontWeight: 600 }}>Average Score Improvement</span>
-                  <span style={{ fontSize: 13, fontWeight: 700, color: "#a78bfa" }}>+210 pts</span>
+                  <span style={{ fontSize: 13, fontWeight: 600, color: "var(--text)" }}>Average Score Improvement</span>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: "var(--primary-light)" }}>+210 pts</span>
                 </div>
-                <div style={{ height: 8, background: "rgba(255,255,255,0.08)", borderRadius: 4, overflow: "hidden" }}>
+                <div style={{ height: 8, background: "rgba(56,189,248,0.1)", borderRadius: 4, overflow: "hidden" }}>
                   <div style={{
                     height: "100%", width: "82%",
-                    background: "linear-gradient(90deg, #7c3aed, #ec4899)",
+                    background: "linear-gradient(90deg, #0ea5e9, #14b8a6)",
                     borderRadius: 4,
                   }} />
                 </div>

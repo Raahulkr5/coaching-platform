@@ -11,6 +11,16 @@ node_modules/
 /dist
 /.next
 /out
+client/dist/
+server/public/
+
+# Database (don't commit production DB)
+server/database/*.db
+server/database/*.db-shm
+server/database/*.db-wal
+
+# Uploads (user-generated content)
+server/uploads/
 
 # Miscellaneous Build Tools
 .docusaurus

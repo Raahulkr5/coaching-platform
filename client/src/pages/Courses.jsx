@@ -11,6 +11,8 @@ const courses = [
     sessions: "36 Sessions",
     level: "All Levels",
     color: "#7c3aed",
+    tagBg: "rgba(124,58,237,0.1)",
+    tagColor: "#7c3aed",
   },
   {
     icon: "📝",
@@ -21,6 +23,8 @@ const courses = [
     sessions: "30 Sessions",
     level: "Intermediate",
     color: "#ec4899",
+    tagBg: "rgba(236,72,153,0.1)",
+    tagColor: "#ec4899",
   },
   {
     icon: "🧪",
@@ -30,7 +34,9 @@ const courses = [
     duration: "16 Weeks",
     sessions: "48 Sessions",
     level: "Advanced",
-    color: "#06b6d4",
+    color: "#0ea5e9",
+    tagBg: "rgba(14,165,233,0.1)",
+    tagColor: "#0ea5e9",
   },
   {
     icon: "📊",
@@ -41,6 +47,8 @@ const courses = [
     sessions: "42 Sessions",
     level: "Advanced",
     color: "#f59e0b",
+    tagBg: "rgba(245,158,11,0.1)",
+    tagColor: "#d97706",
   },
   {
     icon: "📖",
@@ -51,6 +59,8 @@ const courses = [
     sessions: "24 Sessions",
     level: "Beginner",
     color: "#10b981",
+    tagBg: "rgba(16,185,129,0.1)",
+    tagColor: "#059669",
   },
   {
     icon: "🔢",
@@ -61,18 +71,14 @@ const courses = [
     sessions: "24 Sessions",
     level: "Intermediate",
     color: "#ef4444",
+    tagBg: "rgba(239,68,68,0.1)",
+    tagColor: "#dc2626",
   },
 ];
 
-const tagColors = {
-  SAT: { bg: "rgba(124,58,237,0.15)", color: "#a78bfa" },
-  ACT: { bg: "rgba(236,72,153,0.15)", color: "#f9a8d4" },
-  AP:  { bg: "rgba(6,182,212,0.15)",  color: "#67e8f9" },
-};
-
 export default function Courses() {
   return (
-    <div style={{ minHeight: "100vh", background: "var(--bg)" }}>
+    <div className="page-wrapper">
       <Navbar />
 
       <div style={{ maxWidth: 1200, margin: "0 auto", padding: "120px 40px 80px" }}>
@@ -81,86 +87,92 @@ export default function Courses() {
         <div className="animate-fade-up" style={{ textAlign: "center", marginBottom: 64 }}>
           <div style={{
             display: "inline-flex", alignItems: "center", gap: 8,
-            background: "rgba(124,58,237,0.12)", border: "1px solid rgba(124,58,237,0.3)",
+            background: "rgba(14,165,233,0.08)", border: "1px solid rgba(14,165,233,0.2)",
             borderRadius: 50, padding: "6px 16px", fontSize: 13, fontWeight: 600,
-            color: "#a78bfa", marginBottom: 20,
+            color: "var(--primary)", marginBottom: 20,
           }}>
-            <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#a78bfa", display: "inline-block" }} />
+            <span style={{ width: 8, height: 8, borderRadius: "50%", background: "var(--primary)", display: "inline-block" }} />
             Expert-Led Programs
           </div>
           <h1 style={{
             fontSize: "clamp(36px, 5vw, 56px)", fontWeight: 900,
-            letterSpacing: "-1px", lineHeight: 1.1, marginBottom: 16,
+            letterSpacing: "-1px", lineHeight: 1.1, marginBottom: 16, color: "var(--text)",
           }}>
             Our <span className="gradient-text">Courses</span>
           </h1>
-          <p style={{ fontSize: 18, color: "#8b8aa3", maxWidth: 520, margin: "0 auto" }}>
+          <p style={{ fontSize: 18, color: "var(--text-muted)", maxWidth: 520, margin: "0 auto" }}>
             Choose from our curated programs designed by top-scoring coaches to
             maximize your results.
           </p>
         </div>
 
         {/* Course Grid */}
-        <div style={{
+        <div className="courses-grid" style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(340px, 1fr))",
+          gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))",
           gap: 24,
         }}>
           {courses.map((course, i) => (
             <div
               key={course.title}
-              className="glass-card"
               style={{
                 padding: "28px",
-                background: "rgba(19,19,26,0.85)",
-                border: "1px solid rgba(255,255,255,0.08)",
+                background: "var(--bg-card)",
+                border: `1px solid ${course.color}25`,
+                borderRadius: 16,
+                boxShadow: `0 4px 24px ${course.color}10`,
                 transition: "all 0.25s ease",
                 cursor: "pointer",
                 animation: `fadeUp 0.5s ease ${i * 0.08}s both`,
+                borderTop: `3px solid ${course.color}`,
               }}
               onMouseEnter={e => {
-                e.currentTarget.style.borderColor = `${course.color}50`;
-                e.currentTarget.style.transform = "translateY(-4px)";
-                e.currentTarget.style.boxShadow = `0 20px 40px rgba(0,0,0,0.3)`;
+                e.currentTarget.style.transform = "translateY(-6px)";
+                e.currentTarget.style.boxShadow = `0 20px 48px ${course.color}25`;
+                e.currentTarget.style.borderColor = `${course.color}60`;
+                e.currentTarget.style.borderTopColor = course.color;
               }}
               onMouseLeave={e => {
-                e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)";
                 e.currentTarget.style.transform = "translateY(0)";
-                e.currentTarget.style.boxShadow = "none";
+                e.currentTarget.style.boxShadow = `0 4px 24px ${course.color}10`;
+                e.currentTarget.style.borderColor = `${course.color}25`;
+                e.currentTarget.style.borderTopColor = course.color;
               }}
             >
               {/* Top row */}
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
                 <div style={{
                   width: 52, height: 52, borderRadius: 14,
-                  background: `${course.color}20`,
-                  border: `1px solid ${course.color}40`,
+                  background: `${course.color}15`,
+                  border: `1px solid ${course.color}30`,
                   display: "flex", alignItems: "center", justifyContent: "center",
                   fontSize: 24,
                 }}>
                   {course.icon}
                 </div>
                 <span style={{
-                  ...tagColors[course.tag],
+                  background: course.tagBg,
+                  color: course.tagColor,
                   padding: "4px 12px", borderRadius: 50,
                   fontSize: 12, fontWeight: 700, letterSpacing: "0.5px",
+                  border: `1px solid ${course.color}25`,
                 }}>
                   {course.tag}
                 </span>
               </div>
 
-              <h2 style={{ fontSize: 19, fontWeight: 700, marginBottom: 10, letterSpacing: "-0.3px" }}>
+              <h2 style={{ fontSize: 19, fontWeight: 700, marginBottom: 10, letterSpacing: "-0.3px", color: "var(--text)" }}>
                 {course.title}
               </h2>
-              <p style={{ fontSize: 14, color: "#8b8aa3", lineHeight: 1.65, marginBottom: 24 }}>
+              <p style={{ fontSize: 14, color: "var(--text-muted)", lineHeight: 1.65, marginBottom: 24 }}>
                 {course.desc}
               </p>
 
               {/* Meta */}
               <div style={{
-                display: "flex", gap: 12, flexWrap: "wrap",
-                paddingTop: 20, borderTop: "1px solid rgba(255,255,255,0.06)",
-                marginBottom: 24,
+                display: "flex", gap: 8, flexWrap: "wrap",
+                paddingTop: 16, borderTop: `1px solid ${course.color}15`,
+                marginBottom: 20,
               }}>
                 {[
                   { label: course.duration, icon: "🕐" },
@@ -169,9 +181,10 @@ export default function Courses() {
                 ].map(({ label, icon }) => (
                   <span key={label} style={{
                     display: "flex", alignItems: "center", gap: 5,
-                    fontSize: 12, color: "#8b8aa3",
-                    background: "rgba(255,255,255,0.05)",
-                    padding: "5px 10px", borderRadius: 6,
+                    fontSize: 12, color: "var(--text-muted)", fontWeight: 500,
+                    background: `${course.color}08`,
+                    border: `1px solid ${course.color}20`,
+                    padding: "4px 10px", borderRadius: 6,
                   }}>
                     {icon} {label}
                   </span>
@@ -179,12 +192,22 @@ export default function Courses() {
               </div>
 
               <Link to="/login">
-                <button className="btn-primary" style={{
-                  width: "100%", justifyContent: "center",
-                  padding: "11px", fontSize: 14,
+                <button style={{
+                  width: "100%",
+                  padding: "12px",
+                  fontSize: 14,
+                  fontWeight: 600,
+                  color: "white",
+                  border: "none",
+                  borderRadius: 10,
+                  cursor: "pointer",
                   background: `linear-gradient(135deg, ${course.color}, ${course.color}cc)`,
                   boxShadow: `0 4px 16px ${course.color}40`,
-                }}>
+                  transition: "all 0.2s ease",
+                }}
+                  onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = `0 8px 24px ${course.color}50`; }}
+                  onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = `0 4px 16px ${course.color}40`; }}
+                >
                   Enroll Now →
                 </button>
               </Link>

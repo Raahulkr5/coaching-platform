@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "scripts": {
     "start": "node server.js",
-    "build": "echo 'No build required'"
+    "dev": "nodemon server.js",
+    "build": "cd ../client && npm install && npm run build && rm -rf ../server/public && cp -r dist ../server/public"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
@@ -12,6 +13,8 @@
     "express": "^4.18.2",
     "jsonwebtoken": "^9.0.2",
     "multer": "^2.1.1",
+    "nodemailer": "^8.0.10",
+    "razorpay": "^2.9.6",
     "sqlite3": "^5.1.7"
   }
 }
